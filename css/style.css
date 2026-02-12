@@ -1,0 +1,71 @@
+/* --- GLOBAL STYLES --- */
+html, body {
+  height: 100%;
+  margin: 0;
+  background-color: #000000 !important;
+  color: white;
+  font-family: system-ui, -apple-system, sans-serif;
+  overflow: hidden; /* Empêche le scroll sur le body */
+}
+
+body { display: flex; flex-direction: column; }
+
+/* --- C'EST ICI QUE LA MAGIE SPA OPÈRE --- */
+.spa-view {
+  display: none; /* CACHÉ PAR DÉFAUT */
+  height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  overflow-y: auto; /* Scroll interne à la vue */
+  background-color: #000;
+}
+
+/* SEULE LA VUE AVEC LA CLASSE 'ACTIVE' S'AFFICHE */
+.spa-view.active {
+  display: flex; 
+}
+
+/* --- STYLES SPÉCIFIQUES --- */
+.banner-header { background-color: #000; color: white; padding: 1.5rem; text-align: center; border-bottom: 1px solid #333; }
+
+.signup-container {
+  background-color: #121212; border: 1px solid #333; border-radius: 15px; padding: 2.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); width: 100%; max-width: 500px;
+  margin: 2rem auto; text-align: center;
+}
+
+.hero-image-container { width: 100%; height: 200px; margin-bottom: 2rem; overflow: hidden; border-radius: 10px; border: 1px solid #333; display: flex; align-items: center; justify-content: center; background-color: #000; }
+.hero-image-container img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Cards & Carousels */
+.card-img-custom { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 10px; }
+.clickable-card { cursor: pointer; transition: transform 0.2s, background-color 0.2s; }
+.clickable-card:hover { transform: scale(1.03); background-color: rgba(255, 255, 255, 0.05) !important; border-radius: 8px; }
+.section-container { margin-bottom: 40px; padding: 0 1rem; }
+
+/* Album Detail */
+.album-header-container { padding: 24px 32px; display: flex; align-items: flex-end; gap: 24px; background: linear-gradient(180deg, #444 0%, #121212 100%); }
+.album-cover-art { width: 232px; height: 232px; min-width: 232px; box-shadow: 0 4px 60px rgba(0,0,0,0.5); background-color: #282828; }
+.album-cover-art img { width: 100%; height: 100%; object-fit: cover; }
+.album-details h1 { font-size: 3rem; font-weight: 800; margin: 0.2em 0; line-height: 1; }
+.track-grid-row { display: grid; grid-template-columns: 40px 4fr 3fr 60px; align-items: center; padding: 8px 16px; border-radius: 4px; color: #b3b3b3; font-size: 0.9rem; }
+.track-item:hover { background-color: rgba(255, 255, 255, 0.1); color: white; cursor: pointer; }
+.playing .col-title, .playing .col-index { color: #1db954; }
+
+/* Artiste */
+.artist-header { height: 40vh; min-height: 340px; background-size: cover; background-position: center; display: flex; align-items: flex-end; padding: 30px; position: relative; }
+.artist-name { font-size: 4rem; font-weight: 900; margin: 0; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 2; }
+.card-album-custom { background-color: #181818; border-radius: 6px; padding: 15px; cursor: pointer; transition: background 0.3s; height: 100%; }
+.card-album-custom img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 4px; margin-bottom: 10px; }
+
+/* Profil */
+.profile-card { background-color: #181818; border-radius: 12px; padding: 2rem; box-shadow: 0 8px 24px rgba(0,0,0,0.3); border: 1px solid #333; }
+.profile-pic-large { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #1db954; margin-bottom: 1rem; }
+.info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.info-label { color: #b3b3b3; font-weight: 500; }
+.info-value { font-weight: 600; color: white; }
+
+/* Footer Player */
+.player-footer { height: 90px; background-color: #181818; border-top: 1px solid #282828; flex-shrink: 0; z-index: 9999; padding: 0 16px; width: 100%; display: flex; justify-content: space-between; align-items: center; position: fixed; bottom: 0; left: 0; display: none; }
+.progress-bar-bg { width: 100%; height: 4px; background: #4d4d4d; border-radius: 2px; cursor: pointer; position: relative; }
+.progress-bar-fill { height: 100%; background: white; border-radius: 2px; width: 0%; }
