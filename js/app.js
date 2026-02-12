@@ -1,6 +1,6 @@
 /* --- DATA --- */
 const musicDB = []; // Base de données vide
-const API_BASE_URL = 'http://localhost:8000/php/request.php';
+const API_BASE_URL = window.location.origin + '/php/request.php';
 
 /* --- ROUTER & NAVIGATION --- */
 function navigateTo(pageName, paramsStr = "") {
