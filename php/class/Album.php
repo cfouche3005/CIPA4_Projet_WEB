@@ -6,17 +6,17 @@ class Album
     public static function list_alb($conn) {
         try {
             if($conn){
-                $sql = 'SELECT Album.Album_ID, Album_Name, Album_Date, Album_Image, Album_Type, Artist.Artist_ID, Artist.Artist_Pseudo 
+                $sql = 'SELECT Album.album_id, album_name, album_date, album_image, album_type, Artist.artist_id, Artist.artist_pseudo 
                         FROM Album 
-                        JOIN Compose ON Album.Album_ID = Compose.Album_ID 
-                        JOIN Artist ON Artist.Artist_ID = Compose.Artist_ID';
+                        JOIN Compose ON Album.album_id = Compose.album_id 
+                        JOIN Artist ON Artist.artist_id = Compose.artist_id';
                 $stmt = $conn->prepare($sql);
                 $stmt->execute();
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 foreach ($result as &$album) {
-                    if ($album['Album_Image']) {
-                        $album['Album_Image'] = "https://music.cfouche.fr/" . $album['Album_ID'] . "/" . $album['Album_Image'];
+                    if (isset($album['album_image']) && $album['album_image']) {
+                        $album['album_image'] = "https://music.cfouche.fr/" . $album['album_id'] . "/" . $album['album_image'];
                     }
                 }
             }
@@ -30,7 +30,7 @@ class Album
     // Récupère l'id de l'album à partir de son nom
     public static function id_alb($nom_album, $conn) {
         try {
-            $sql = 'SELECT Album_ID FROM Album WHERE Album_Name = :nom_album';
+            $sql = 'SELECT album_id FROM Album WHERE album_name = :nom_album';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':nom_album', $nom_album);
             $stmt->execute();
@@ -39,13 +39,13 @@ class Album
             error_log('Connection error: ' . $exception->getMessage());
             return false;
         }
-        return $result['Album_ID'];
+        return $result['album_id'];
     }
 
     // Récupère la date de l'album à partir de son id
     public static function date_alb($id_album, $conn) {
         try {
-            $sql = 'SELECT Album_Date FROM Album WHERE Album_ID = :id_album';
+            $sql = 'SELECT album_date FROM Album WHERE album_id = :id_album';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id_album', $id_album);
             $stmt->execute();
@@ -54,20 +54,20 @@ class Album
             error_log('Connection error: ' . $exception->getMessage());
             return false;
         }
-        return $result['Album_Date']; 
+        return $result['album_date']; 
     }
 
     // Récupère l'image de l'album à partir de son id
     public static function image_alb($id_album, $conn) {
         try {
-            $sql = 'SELECT Album_Image FROM Album WHERE Album_ID = :id_album';
+            $sql = 'SELECT album_image FROM Album WHERE album_id = :id_album';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id_album', $id_album);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            if ($result && $result['Album_Image']) {
-                return "https://music.cfouche.fr/" . $id_album . "/" . $result['Album_Image'];
+            if ($result && $result['album_image']) {
+                return "https://music.cfouche.fr/" . $id_album . "/" . $result['album_image'];
             }
             return false;
         } catch (PDOException $exception) {
@@ -79,7 +79,7 @@ class Album
     // Récupère le type de l'album à partir de son id
     public static function type_alb($id_album, $conn) {
         try {
-            $sql = 'SELECT Album_Type FROM Album WHERE Album_ID = :id_album';
+            $sql = 'SELECT album_type FROM Album WHERE album_id = :id_album';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id_album', $id_album);
             $stmt->execute();
@@ -88,31 +88,31 @@ class Album
             error_log('Connection error: ' . $exception->getMessage());
             return false;
         }
-        return $result['Album_Type'];
+        return $result['album_type'];
     }
 
     //fonction qui a partir de l'id d'un album retourne toutes les infos et musiques de l'album
     public static function info_album($id_album, $conn){
         try {
             // Updated query for Album info + Artist info via Compose
-            $sqlAlbum = 'SELECT Album.Album_ID, Album_Name, Album_Date, Album_Image, Album_Type, Artist.Artist_ID, Artist.Artist_Pseudo 
+            $sqlAlbum = 'SELECT Album.album_id, album_name, album_date, album_image, album_type, Artist.artist_id, Artist.artist_pseudo 
                          FROM Album 
-                         JOIN Compose ON Album.Album_ID = Compose.Album_ID 
-                         JOIN Artist ON Artist.Artist_ID = Compose.Artist_ID 
-                         WHERE Album.Album_ID = :id_album';
+                         JOIN Compose ON Album.album_id = Compose.album_id 
+                         JOIN Artist ON Artist.artist_id = Compose.artist_id 
+                         WHERE Album.album_id = :id_album';
             
             // Updated query for Music info via Contient
-            $sqlMusic = 'SELECT MUSIC.Music_ID, Music_Title, Music_Duration, Music_Place 
+            $sqlMusic = 'SELECT MUSIC.music_id, music_title, music_duration, music_place 
                          FROM MUSIC 
-                         JOIN Contient ON MUSIC.Music_ID = Contient.Music_ID 
-                         WHERE Contient.Album_ID = :id_album 
-                         ORDER BY Music_Place';
+                         JOIN Contient ON MUSIC.music_id = Contient.music_id 
+                         WHERE Contient.album_id = :id_album 
+                         ORDER BY music_place';
             
             // Updated query for Track Artists via Creer
-            $sqlArtist = 'SELECT Artist.Artist_ID, Artist_Pseudo 
+            $sqlArtist = 'SELECT Artist.artist_id, artist_pseudo 
                           FROM Artist 
-                          JOIN Creer ON Artist.Artist_ID = Creer.Artist_ID 
-                          WHERE Creer.Music_ID = :id_music';
+                          JOIN Creer ON Artist.artist_id = Creer.artist_id 
+                          WHERE Creer.music_id = :id_music';
 
             $stmt = $conn->prepare($sqlAlbum);
             $stmt->bindParam(':id_album', $id_album);
@@ -121,8 +121,8 @@ class Album
             
             // Process album image URL
             foreach ($resultAlbum as &$album) {
-                if ($album['Album_Image']) {
-                    $album['Album_Image'] = "https://music.cfouche.fr/" . $album['Album_ID'] . "/" . $album['Album_Image'];
+                if (isset($album['album_image']) && $album['album_image']) {
+                    $album['album_image'] = "https://music.cfouche.fr/" . $album['album_id'] . "/" . $album['album_image'];
                 }
             }
             unset($album); // Break reference
@@ -136,13 +136,13 @@ class Album
 
             foreach ($resultMusic as $music) {
                 $stmt2 = $conn->prepare($sqlArtist);
-                $stmt2->bindParam(':id_music', $music['Music_ID']);
+                $stmt2->bindParam(':id_music', $music['music_id']);
                 $stmt2->execute();
                 $resultArtist = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                 
                 $music['artists'] = $resultArtist;
                 // Generate music link
-                $music['lien_music'] = "https://music.cfouche.fr/" . $id_album . "/" . $music['Music_ID'] . ".opus";
+                $music['lien_music'] = "https://music.cfouche.fr/" . $id_album . "/" . $music['music_id'] . ".opus";
                 
                 array_push($Endresult, $music);
             }
@@ -165,10 +165,10 @@ class Album
     // Récupère 5 albums aléatoires 
     public static function album_random($numbers, $conn) {
         try {
-            $sql = 'SELECT Album.Album_ID, Album_Name, Album_Image, Artist.Artist_ID, Artist_Pseudo 
+            $sql = 'SELECT Album.album_id, album_name, album_image, Artist.artist_id, artist_pseudo 
                 FROM Album 
-                JOIN Compose ON Album.Album_ID = Compose.Album_ID 
-                JOIN Artist ON Artist.Artist_ID = Compose.Artist_ID 
+                JOIN Compose ON Album.album_id = Compose.album_id 
+                JOIN Artist ON Artist.artist_id = Compose.artist_id 
                 ORDER BY RANDOM() LIMIT :numbers';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':numbers', $numbers);
@@ -176,8 +176,8 @@ class Album
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             foreach ($result as &$album) {
-                if ($album['Album_Image']) {
-                    $album['Album_Image'] = "https://music.cfouche.fr/" . $album['Album_ID'] . "/" . $album['Album_Image'];
+                if (isset($album['album_image']) && $album['album_image']) {
+                    $album['album_image'] = "https://music.cfouche.fr/" . $album['album_id'] . "/" . $album['album_image'];
                 }
             }
         } catch (PDOException $exception) {
@@ -185,5 +185,32 @@ class Album
             return false;
         }
         return $result;
+    }
+
+    // Recherche des albums
+    public static function search_alb($term, $conn) {
+        try {
+            $term = "%$term%";
+            $sql = 'SELECT Album.album_id, album_name, album_image, album_type, Artist.artist_pseudo 
+                    FROM Album 
+                    JOIN Compose ON Album.album_id = Compose.album_id 
+                    JOIN Artist ON Artist.artist_id = Compose.artist_id 
+                    WHERE LOWER(album_name) LIKE LOWER(:term) OR LOWER(Artist.artist_pseudo) LIKE LOWER(:term)
+                    LIMIT 10';
+            $stmt = $conn->prepare($sql);
+            $stmt->bindParam(':term', $term);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($result as &$album) {
+                if (isset($album['album_image']) && $album['album_image']) {
+                    $album['album_image'] = "https://music.cfouche.fr/" . $album['album_id'] . "/" . $album['album_image'];
+                }
+            }
+            return $result;
+        } catch (PDOException $exception) {
+            error_log('Connection error: ' . $exception->getMessage());
+            return false;
+        }
     }
 }

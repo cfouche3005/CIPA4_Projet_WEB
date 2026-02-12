@@ -21,7 +21,7 @@ class Playlist
     // Récupère le nom de la playlist à partir de son id
     public static function name_pla($id_playlist, $conn) {
         try {
-            $sql = 'SELECT Playlist_Name FROM Playlist WHERE Playlist_ID = :id_playlist';
+            $sql = 'SELECT playlist_name FROM Playlist WHERE playlist_id = :id_playlist';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id_playlist', $id_playlist);
             $stmt->execute();
@@ -30,12 +30,12 @@ class Playlist
             error_log('Connection error: ' . $exception->getMessage());
             return false;
         }
-        return $result['Playlist_Name'];
+        return $result['playlist_name'];
     }
     //Récupère l'id de la playlist depuis son nom : 
     public static function id_pla($nom_playlist, $conn) {
         try {
-            $sql = 'SELECT Playlist_ID FROM Playlist WHERE Playlist_Name = :nom_playlist';
+            $sql = 'SELECT playlist_id FROM Playlist WHERE playlist_name = :nom_playlist';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':nom_playlist', $nom_playlist);
             $stmt->execute();
@@ -44,7 +44,7 @@ class Playlist
             error_log('Connection error: ' . $exception->getMessage());
             return false;
         }
-        return $result['Playlist_ID'];
+        return $result['playlist_id'];
     }
 
     // Récupère la date de modification de la playlist à partir de son id
@@ -58,7 +58,7 @@ class Playlist
     // Récupère la date de creation de la playlist à partir de son id
     public static function date_creation_pla($id_playlist, $conn) {
         try {
-            $sql = 'SELECT Playlist_Creation_Date FROM Playlist WHERE Playlist_ID = :id_playlist';
+            $sql = 'SELECT playlist_creation_date FROM Playlist WHERE playlist_id = :id_playlist';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id_playlist', $id_playlist);
             $stmt->execute();
@@ -67,14 +67,14 @@ class Playlist
             error_log('Connection error: ' . $exception->getMessage());
             return false;
         }
-        return $result['Playlist_Creation_Date'];
+        return $result['playlist_creation_date'];
     }
 
     // Fonction qui crée une playlist 
     public static function creer_playlist($nom_playlist, $id_user, $conn) {
         try {
             //vérification si la playlist existe déjà :
-            $sqlVerif = 'SELECT COUNT(*) as count FROM Playlist WHERE Playlist_Name = :nom_playlist AND User_ID = :id_user';
+            $sqlVerif = 'SELECT COUNT(*) as count FROM Playlist WHERE playlist_name = :nom_playlist AND user_id = :id_user';
             $stmtVerif = $conn->prepare($sqlVerif);
             $stmtVerif->bindParam(':nom_playlist', $nom_playlist);
             $stmtVerif->bindParam(':id_user', $id_user);
@@ -92,7 +92,7 @@ class Playlist
                     $playlist_id = uniqid(); 
 
                     //si elle n'existe pas, on l'ajoute :
-                    $sql = 'INSERT INTO Playlist (Playlist_ID, Playlist_Name, Playlist_Creation_Date, User_ID) VALUES (:playlist_id, :nom_playlist, CURRENT_DATE, :id_user)';
+                    $sql = 'INSERT INTO Playlist (playlist_id, playlist_name, playlist_creation_date, user_id) VALUES (:playlist_id, :nom_playlist, CURRENT_DATE, :id_user)';
                     $stmt = $conn->prepare($sql);
                     $stmt->bindParam(':playlist_id', $playlist_id);
                     $stmt->bindParam(':nom_playlist', $nom_playlist);
@@ -113,7 +113,7 @@ class Playlist
     // Fonction qui permet de modifier une playlist (son nom)
     public static function modifier_playlist($nom_playlist, $id_playlist, $conn) {
         try {
-            $sql = 'UPDATE Playlist SET Playlist_Name = :nom_playlist WHERE Playlist_ID = :id_playlist';
+            $sql = 'UPDATE Playlist SET playlist_name = :nom_playlist WHERE playlist_id = :id_playlist';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':nom_playlist', $nom_playlist);
             $stmt->bindParam(':id_playlist', $id_playlist);
@@ -131,12 +131,12 @@ class Playlist
         try
         {
             // First delete entries in Appartient (Music in Playlist)
-            $reqDelMusic = 'DELETE FROM Appartient WHERE Playlist_ID=:id_playlist';
+            $reqDelMusic = 'DELETE FROM Appartient WHERE playlist_id=:id_playlist';
             $stmtDelMusic = $conn->prepare($reqDelMusic);
             $stmtDelMusic->bindParam(':id_playlist', $id_playlist);
             $stmtDelMusic->execute();
 
-            $request = 'DELETE FROM Playlist WHERE Playlist_ID=:id_playlist';
+            $request = 'DELETE FROM Playlist WHERE playlist_id=:id_playlist';
             $statement = $conn->prepare($request);
             $statement->bindParam(':id_playlist', $id_playlist);
             $statement->execute();
@@ -155,7 +155,7 @@ class Playlist
         try
         {
             // Vérifier si la combinaison id_music/id_playlist existe déjà
-            $checkSql = 'SELECT COUNT(*) FROM Appartient WHERE Playlist_ID = :id_playlist AND Music_ID = :id_music';
+            $checkSql = 'SELECT COUNT(*) FROM Appartient WHERE playlist_id = :id_playlist AND music_id = :id_music';
             $checkStmt = $conn->prepare($checkSql);
             $checkStmt->bindParam(':id_playlist', $id_playlist);
             $checkStmt->bindParam(':id_music', $id_music);
@@ -167,7 +167,7 @@ class Playlist
             }
 
             // Effectuer l'insertion
-            $sql = 'INSERT INTO Appartient (Playlist_ID, Music_ID) VALUES (:id_playlist, :id_music)';
+            $sql = 'INSERT INTO Appartient (playlist_id, music_id) VALUES (:id_playlist, :id_music)';
             $statement = $conn->prepare($sql);
             $statement->bindParam(':id_playlist', $id_playlist);
             $statement->bindParam(':id_music', $id_music);
@@ -186,7 +186,7 @@ class Playlist
         {
             try
             {
-                $request = 'DELETE FROM Appartient WHERE Playlist_ID=:id_playlist AND Music_ID=:id_music';
+                $request = 'DELETE FROM Appartient WHERE playlist_id=:id_playlist AND music_id=:id_music';
                 $statement = $conn->prepare($request);
                 $statement->bindParam(':id_playlist', $id_playlist);
                 $statement->bindParam(':id_music', $id_music);
@@ -206,32 +206,32 @@ class Playlist
             try
             {   
                 // Get Playlist Info
-                $sqlPlaylist = 'SELECT Playlist_ID, Playlist_Name, Playlist_Creation_Date FROM Playlist WHERE Playlist_ID=:id_playlist';
+                $sqlPlaylist = 'SELECT playlist_id, playlist_name, playlist_creation_date FROM Playlist WHERE playlist_id=:id_playlist';
                 $stmt = $conn->prepare($sqlPlaylist);
                 $stmt->bindParam(':id_playlist', $id_playlist);
                 $stmt->execute();
                 $resultPlaylist = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
                 // Get Musics in Playlist
-                $sqlMusic = 'SELECT m.Music_ID, m.Music_Title, m.Music_Duration 
+                $sqlMusic = 'SELECT m.music_id, m.music_title, m.music_duration 
                              FROM MUSIC m 
-                             JOIN Appartient a ON m.Music_ID = a.Music_ID 
-                             WHERE a.Playlist_ID = :id_playlist';
+                             JOIN Appartient a ON m.music_id = a.music_id 
+                             WHERE a.playlist_id = :id_playlist';
                 $stmt1 = $conn->prepare($sqlMusic);
                 $stmt1->bindParam(':id_playlist', $id_playlist);
                 $stmt1->execute();
                 $resultMusic = $stmt1->fetchAll(PDO::FETCH_ASSOC);
 
                 // Get Artists for each Music
-                $sqlArtist = 'SELECT Artist.Artist_ID, Artist_Pseudo 
+                $sqlArtist = 'SELECT Artist.artist_id, artist_pseudo 
                               FROM Artist 
-                              JOIN Creer ON Artist.Artist_ID = Creer.Artist_ID 
-                              WHERE Creer.Music_ID = :id_music';
+                              JOIN Creer ON Artist.artist_id = Creer.artist_id 
+                              WHERE Creer.music_id = :id_music';
 
                 $Endresult  = array();
                 foreach ($resultMusic as $music ) {
                     $stmt2 = $conn->prepare($sqlArtist);
-                    $stmt2->bindParam(':id_music', $music['Music_ID']);
+                    $stmt2->bindParam(':id_music', $music['music_id']);
                     $stmt2->execute();
                     $resultArtist = $stmt2->fetchAll(PDO::FETCH_ASSOC);
                     
@@ -239,14 +239,14 @@ class Playlist
                     
                     // Generate music link (Need Album ID for this)
                     // We need to fetch Album ID for the music to generate the link
-                    $sqlAlbum = 'SELECT Album_ID FROM Contient WHERE Music_ID = :id_music LIMIT 1';
+                    $sqlAlbum = 'SELECT album_id FROM Contient WHERE music_id = :id_music LIMIT 1';
                     $stmtAlb = $conn->prepare($sqlAlbum);
-                    $stmtAlb->bindParam(':id_music', $music['Music_ID']);
+                    $stmtAlb->bindParam(':id_music', $music['music_id']);
                     $stmtAlb->execute();
                     $albRes = $stmtAlb->fetch(PDO::FETCH_ASSOC);
                     
                     if ($albRes) {
-                         $music['lien_music'] = "https://music.cfouche.fr/" . $albRes['Album_ID'] . "/" . $music['Music_ID'] . ".opus";
+                         $music['lien_music'] = "https://music.cfouche.fr/" . $albRes['album_id'] . "/" . $music['music_id'] . ".opus";
                     } else {
                         $music['lien_music'] = null;
                     }
@@ -268,7 +268,7 @@ class Playlist
     //Récupère les playlists d'un utilisateur à partir de son id
     public static function playlist_user($id_user, $conn) { 
         try {
-            $sql = 'SELECT Playlist_ID, Playlist_Name, Playlist_Creation_Date FROM Playlist WHERE User_ID = :id_user';
+            $sql = 'SELECT playlist_id, playlist_name, playlist_creation_date FROM Playlist WHERE user_id = :id_user';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id_user', $id_user);
             $stmt->execute();

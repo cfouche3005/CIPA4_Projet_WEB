@@ -21,7 +21,7 @@ class Artist
     // Récupère l'id d'un artiste' à partir de son pseudo
     public static function id_art($pseudo_artist, $conn) {
         try {
-            $sql = 'SELECT Artist_ID FROM Artist WHERE Artist_Pseudo = :pseudo_artist';
+            $sql = 'SELECT artist_id FROM Artist WHERE artist_pseudo = :pseudo_artist';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':pseudo_artist', $pseudo_artist);
             $stmt->execute();
@@ -30,13 +30,13 @@ class Artist
             error_log('Connection error: ' . $exception->getMessage());
             return false;
         }
-        return $result['Artist_ID'];
+        return $result['artist_id'];
     }
 
     // Récupère le nom et info de l'artiste à partir de son id
     public static function name_info_art($id_artist, $conn) {
         try {
-            $sql = 'SELECT Artist_Pseudo FROM Artist WHERE Artist_ID = :id_artist';
+            $sql = 'SELECT artist_pseudo FROM Artist WHERE artist_id = :id_artist';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id_artist', $id_artist);
             $stmt->execute();
@@ -45,7 +45,7 @@ class Artist
             error_log('Connection error: ' . $exception->getMessage());
             return false;
         }
-        return $result['Artist_Pseudo'];
+        return $result['artist_pseudo'];
     }
 
     // Récupère le lien de la biographie de l'artiste à partir de son id
@@ -64,14 +64,14 @@ class Artist
     // Récupère la photo de l'artiste à partir de son id
     public static function photo_art($id_artist, $conn) {
         try {
-            $sql = 'SELECT Artist_Image FROM Artist WHERE Artist_ID = :id_artist';
+            $sql = 'SELECT artist_image FROM Artist WHERE artist_id = :id_artist';
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':id_artist', $id_artist);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            if ($result && $result['Artist_Image']) {
-                return "https://music.cfouche.fr/artists/" . $result['Artist_Image'];
+            if ($result && $result['artist_image']) {
+                return "https://music.cfouche.fr/artists/" . $result['artist_image'];
             }
             return false;
         } catch (PDOException $exception) {
@@ -84,7 +84,7 @@ class Artist
     public static function info_artiste($id_artist, $conn) {
         try {
             // Get Artist Info
-            $sqlArtist = 'SELECT * FROM Artist WHERE Artist_ID = :id_artist';
+            $sqlArtist = 'SELECT * FROM Artist WHERE artist_id = :id_artist';
             $stmt = $conn->prepare($sqlArtist);
             $stmt->bindParam(':id_artist', $id_artist);
             $stmt->execute();
@@ -93,14 +93,14 @@ class Artist
             if (!$artistInfo) return false;
 
             // Get Albums composed by Artist
-            $sqlAlbum = 'SELECT Album.* FROM Album JOIN Compose ON Album.Album_ID = Compose.Album_ID WHERE Compose.Artist_ID = :id_artist';
+            $sqlAlbum = 'SELECT Album.* FROM Album JOIN Compose ON Album.album_id = Compose.album_id WHERE Compose.artist_id = :id_artist';
             $stmt = $conn->prepare($sqlAlbum);
             $stmt->bindParam(':id_artist', $id_artist);
             $stmt->execute();
             $albums = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             // Get Top 6 Musics created by Artist
-            $sqlMusic = 'SELECT MUSIC.* FROM MUSIC JOIN Creer ON MUSIC.Music_ID = Creer.Music_ID WHERE Creer.Artist_ID = :id_artist LIMIT 6';
+            $sqlMusic = 'SELECT MUSIC.* FROM MUSIC JOIN Creer ON MUSIC.music_id = Creer.music_id WHERE Creer.artist_id = :id_artist LIMIT 6';
             $stmt = $conn->prepare($sqlMusic);
             $stmt->bindParam(':id_artist', $id_artist);
             $stmt->execute();

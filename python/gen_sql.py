@@ -19,6 +19,7 @@ musicbrainzngs.set_useragent("CIPA4_GenSQL", "0.1", "contact@example.com")
 
 # Configuration
 OUTPUT_DIR = "processed_music"
+SQL_OUTPUT_FILE = "../bdd/data.sql"
 
 # Cache to avoid repeated API calls
 album_art_cache = {}
@@ -389,39 +390,45 @@ def process_file(file_path):
             sql_data["possede"].add((genre_id, music_id))
 
 def generate_sql():
-    print("-- Generated SQL")
+    print(f"-- Writing SQL to {SQL_OUTPUT_FILE}")
 
-    print("\n-- Artists")
-    for aid, data in sql_data["artists"].items():
-        print(f"INSERT INTO Artist (Artist_ID, Artist_Pseudo, Artist_Image) VALUES ({escape_sql(aid)}, {escape_sql(data['name'])}, {escape_sql(data['image'])}) ON CONFLICT (Artist_ID) DO NOTHING;")
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(SQL_OUTPUT_FILE), exist_ok=True)
 
-    print("\n-- Albums")
-    for aid, data in sql_data["albums"].items():
-        print(f"INSERT INTO Album (Album_ID, Album_Name, Album_Date, Album_Image, Album_Type) VALUES ({escape_sql(aid)}, {escape_sql(data['name'])}, {escape_sql(data['date'])}, {escape_sql(data['image'])}, {escape_sql(data['type'])}) ON CONFLICT (Album_ID) DO NOTHING;")
+    with open(SQL_OUTPUT_FILE, 'w') as f:
+        f.write("-- Generated SQL\n")
 
-    print("\n-- Music")
-    for mid, data in sql_data["musics"].items():
-        print(f"INSERT INTO MUSIC (Music_ID, Music_Title, Music_Duration, Music_Place) VALUES ({escape_sql(mid)}, {escape_sql(data['title'])}, {data['duration']}, {data['place']}) ON CONFLICT (Music_ID) DO NOTHING;")
+        f.write("\n-- Artists\n")
+        for aid, data in sql_data["artists"].items():
+            f.write(f"INSERT INTO Artist (Artist_ID, Artist_Pseudo, Artist_Image) VALUES ({escape_sql(aid)}, {escape_sql(data['name'])}, {escape_sql(data['image'])}) ON CONFLICT (Artist_ID) DO NOTHING;\n")
 
-    print("\n-- Genres")
-    for gid, name in sql_data["genres"].items():
-        print(f"INSERT INTO GENRE (Genre_ID, Genre_Name) VALUES ({escape_sql(gid)}, {escape_sql(name)}) ON CONFLICT (Genre_ID) DO NOTHING;")
+        f.write("\n-- Albums\n")
+        for aid, data in sql_data["albums"].items():
+            f.write(f"INSERT INTO Album (Album_ID, Album_Name, Album_Date, Album_Image, Album_Type) VALUES ({escape_sql(aid)}, {escape_sql(data['name'])}, {escape_sql(data['date'])}, {escape_sql(data['image'])}, {escape_sql(data['type'])}) ON CONFLICT (Album_ID) DO NOTHING;\n")
 
-    print("\n-- Compose (Album -> Artist)")
-    for alb, art in sql_data["compose"]:
-        print(f"INSERT INTO Compose (Album_ID, Artist_ID) VALUES ({escape_sql(alb)}, {escape_sql(art)}) ON CONFLICT (Album_ID, Artist_ID) DO NOTHING;")
+        f.write("\n-- Music\n")
+        for mid, data in sql_data["musics"].items():
+            f.write(f"INSERT INTO MUSIC (Music_ID, Music_Title, Music_Duration, Music_Place) VALUES ({escape_sql(mid)}, {escape_sql(data['title'])}, {data['duration']}, {data['place']}) ON CONFLICT (Music_ID) DO NOTHING;\n")
 
-    print("\n-- Creer (Music -> Artist)")
-    for mus, art in sql_data["creer"]:
-        print(f"INSERT INTO Creer (Music_ID, Artist_ID) VALUES ({escape_sql(mus)}, {escape_sql(art)}) ON CONFLICT (Music_ID, Artist_ID) DO NOTHING;")
+        f.write("\n-- Genres\n")
+        for gid, name in sql_data["genres"].items():
+            f.write(f"INSERT INTO GENRE (Genre_ID, Genre_Name) VALUES ({escape_sql(gid)}, {escape_sql(name)}) ON CONFLICT (Genre_ID) DO NOTHING;\n")
 
-    print("\n-- Contient (Music -> Album)")
-    for mus, alb in sql_data["contient"]:
-        print(f"INSERT INTO Contient (Music_ID, Album_ID) VALUES ({escape_sql(mus)}, {escape_sql(alb)}) ON CONFLICT (Music_ID, Album_ID) DO NOTHING;")
+        f.write("\n-- Compose (Album -> Artist)\n")
+        for alb, art in sql_data["compose"]:
+            f.write(f"INSERT INTO Compose (Album_ID, Artist_ID) VALUES ({escape_sql(alb)}, {escape_sql(art)}) ON CONFLICT (Album_ID, Artist_ID) DO NOTHING;\n")
 
-    print("\n-- Possede (Genre -> Music)")
-    for gen, mus in sql_data["possede"]:
-        print(f"INSERT INTO Possede (Genre_ID, Music_ID) VALUES ({escape_sql(gen)}, {escape_sql(mus)}) ON CONFLICT (Genre_ID, Music_ID) DO NOTHING;")
+        f.write("\n-- Creer (Music -> Artist)\n")
+        for mus, art in sql_data["creer"]:
+            f.write(f"INSERT INTO Creer (Music_ID, Artist_ID) VALUES ({escape_sql(mus)}, {escape_sql(art)}) ON CONFLICT (Music_ID, Artist_ID) DO NOTHING;\n")
+
+        f.write("\n-- Contient (Music -> Album)\n")
+        for mus, alb in sql_data["contient"]:
+            f.write(f"INSERT INTO Contient (Music_ID, Album_ID) VALUES ({escape_sql(mus)}, {escape_sql(alb)}) ON CONFLICT (Music_ID, Album_ID) DO NOTHING;\n")
+
+        f.write("\n-- Possede (Genre -> Music)\n")
+        for gen, mus in sql_data["possede"]:
+            f.write(f"INSERT INTO Possede (Genre_ID, Music_ID) VALUES ({escape_sql(gen)}, {escape_sql(mus)}) ON CONFLICT (Genre_ID, Music_ID) DO NOTHING;\n")
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

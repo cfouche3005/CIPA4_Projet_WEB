@@ -8,7 +8,7 @@
 -- ----------------------------
 CREATE TABLE Artist (
                         Artist_ID VARCHAR(50) NOT NULL,
-                        Artist_Pseudo VARCHAR(50) NOT NULL,
+                        Artist_Pseudo VARCHAR(100) NOT NULL,
                         Artist_Image VARCHAR(50),
                         CONSTRAINT Artist_PK PRIMARY KEY (Artist_ID)
 );
@@ -19,7 +19,7 @@ CREATE TABLE Artist (
 -- ----------------------------
 CREATE TABLE MUSIC (
                        Music_ID VARCHAR(50) NOT NULL,
-                       Music_Title VARCHAR(50) NOT NULL,
+                       Music_Title VARCHAR(150) NOT NULL,
                        Music_Duration INTEGER NOT NULL,
                        Music_Place INTEGER NOT NULL,
                        CONSTRAINT MUSIC_PK PRIMARY KEY (Music_ID)
@@ -31,7 +31,7 @@ CREATE TABLE MUSIC (
 -- ----------------------------
 CREATE TABLE Album (
                        Album_ID VARCHAR(50) NOT NULL,
-                       Album_Name VARCHAR(50) NOT NULL,
+                       Album_Name VARCHAR(150) NOT NULL,
                        Album_Date VARCHAR(50) NOT NULL,
                        Album_Image VARCHAR(50) NOT NULL,
                        Album_Type VARCHAR(50) NOT NULL,

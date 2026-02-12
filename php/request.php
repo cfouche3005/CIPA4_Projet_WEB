@@ -41,6 +41,14 @@ switch ($method){
                 header('HTTP/1.1 200 OK');
                 echo json_encode($response);
                 break;
+            case '/content/playlists':
+                $response = Playlist::info_pla($db);
+                header('Content-Type: application/json; charset=utf-8');
+                header('Cache-control: no-store, no-cache, must-revalidate');
+                header('Pragma: no-cache');
+                header('HTTP/1.1 200 OK');
+                echo json_encode($response);
+                break;
             case '/content/album':
                 if(isset($_GET['id_album'])){
                     $id_album = $_GET['id_album'];
@@ -70,6 +78,36 @@ switch ($method){
                 else{
                     header('HTTP/1.1 400 Bad Request');
 
+                    exit;
+                }
+                break;
+            case '/content/artist':
+                if(isset($_GET['id_artist'])){
+                    $id_artist = $_GET['id_artist'];
+                    $response = Artist::info_artiste($id_artist, $db);
+                    header('Content-Type: application/json; charset=utf-8');
+                    header('Cache-control: no-store, no-cache, must-revalidate');
+                    header('Pragma: no-cache');
+                    header('HTTP/1.1 200 OK');
+                    echo json_encode($response);
+                }
+                else{
+                    header('HTTP/1.1 400 Bad Request');
+                    exit;
+                }
+                break;
+            case '/content/search':
+                if (isset($_GET['q'])) {
+                    $term = $_GET['q'];
+                    $response = Album::search_alb($term, $db);
+                    header('Content-Type: application/json; charset=utf-8');
+                    header('Cache-control: no-store, no-cache, must-revalidate');
+                    header('Pragma: no-cache');
+                    header('HTTP/1.1 200 OK');
+                    echo json_encode($response);
+                }
+                else{
+                    header('HTTP/1.1 400 Bad Request');
                     exit;
                 }
                 break;
@@ -155,6 +193,21 @@ switch ($method){
                 if(isset($_GET['id_user'])){
                     $id_user = $_GET['id_user'];
                     $response = Historique::recup_hist($id_user, $db);
+                    header('Content-Type: application/json; charset=utf-8');
+                    header('Cache-control: no-store, no-cache, must-revalidate');
+                    header('Pragma: no-cache');
+                    header('HTTP/1.1 200 OK');
+                    echo json_encode($response);
+                }
+                else{
+                    header('HTTP/1.1 400 Bad Request');
+                    exit;
+                }
+                break;
+            case '/user/profile':
+                if(isset($_GET['id_user'])){
+                    $id_user = $_GET['id_user'];
+                    $response = Users::info_usr_by_id($id_user, $db);
                     header('Content-Type: application/json; charset=utf-8');
                     header('Cache-control: no-store, no-cache, must-revalidate');
                     header('Pragma: no-cache');
@@ -295,7 +348,7 @@ switch ($method){
                 if (isset($_POST['id_artist'])){
                     
                     $id_artist = $_POST['id_artist'];
-                    $response = Users::info_artiste($id_artist, $db);
+                    $response = Artist::info_artiste($id_artist, $db);
                     header('Content-Type: application/json; charset=utf-8');
                     header('Cache-control: no-store, no-cache, must-revalidate'); 
                     header('Pragma: no-cache');
